@@ -8,15 +8,8 @@ class Colors:
     RED = '\033[91m'
     RESET = '\033[0m'
 
-#engine = create_engine('sqlite:///:memory:', echo=True)
-engine = create_engine('sqlite:///example.db', echo=True)
-if engine:
-    print(f"{Colors.GREEN}База данных успешно создана!{Colors.RESET}")
 
-
-Session = sessionmaker(bind=engine)
-session = Session()
-
+# Базовый класс для ORM
 Base = declarative_base()
 
 
@@ -43,16 +36,27 @@ class Product(Base):
         return f"<Product(id={self.id}, category_id={self.category_id}, name='{self.name}', price={self.price}, in_stock={self.in_stock})>"
 
 
-# Создаём таблицы в базе
-Base.metadata.create_all(engine)
+if __name__ == '__main__':
+    # Создаём движок SQLite
+    #engine = create_engine('sqlite:///:memory:', echo=True)
+    engine = create_engine('sqlite:///example.db', echo=True)
+    if engine:
+        print(f"{Colors.GREEN}База данных успешно создана!{Colors.RESET}")
 
-# Инспектор для анализа структуры БД
-inspector = inspect(engine)
 
-# Получаем список таблиц
-tables = inspector.get_table_names()
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
-if tables:
-    print(f"{Colors.GREEN}Найдены таблицы:{Colors.RESET}", tables)
-else:
-    print(f"{Colors.RED}Таблиц в базе данных нет.{Colors.RESET}")
+    # Создаём таблицы в базе
+    Base.metadata.create_all(engine)
+
+    # Инспектор для анализа структуры БД
+    inspector = inspect(engine)
+
+    # Получаем список таблиц
+    tables = inspector.get_table_names()
+
+    if tables:
+        print(f"{Colors.GREEN}Найдены таблицы:{Colors.RESET}", tables)
+    else:
+        print(f"{Colors.RED}Таблиц в базе данных нет.{Colors.RESET}")
